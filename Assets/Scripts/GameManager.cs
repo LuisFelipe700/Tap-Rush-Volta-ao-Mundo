@@ -1,14 +1,15 @@
 using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Collections;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     public int score = 0;
     public int record = 0;
-    public TextMesh scoreText;
-    public TextMesh timerText;
+    public TextMeshProUGUI scoreText;
+    public TextMeshProUGUI timerText;
     public float gameDuration = 60f;
     private float timeLeft;
     private int comboCount = 0;

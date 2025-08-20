@@ -31,7 +31,7 @@ public class TargetSpawner : MonoBehaviour
 
     void SpawnTarget()
     {
-        Vector2 position = new Vector2(Random.Range(-2f, 2f), Random.Range(-4f, 4f));
+        Vector2 position = new Vector2(Random.Range(-5f, 5f), Random.Range(-4f, 4f));
         GameObject prefab = ShouldSpawnFake() ? fakeTargetPrefab : targetPrefab;
         Instantiate(prefab, position, Quaternion.identity);
     }
