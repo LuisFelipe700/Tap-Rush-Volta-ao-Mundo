@@ -1,45 +1,46 @@
 using UnityEngine;
 
-public class TargetSpawner : MonoBehaviour
+public class Background : MonoBehaviour
 {
-    public GameObject targetPrefab;
-    public GameObject fakeTargetPrefab;
-    public float spawnInterval = 1f;
-    private float timer;
-    private float gameTime;
+    public SpriteRenderer backgroundRenderer;
+    public Sprite[] backgrounds;
+    private int currentIndex = 0;
 
+    void Start()
+    {
+        ChangeBackground(currentIndex);
+    }
+
+    public void ChangeBackground(int index)
+    {
+        if (backgrounds == null || backgrounds.Length == 0 || index >= backgrounds.Length) return;
+
+        backgroundRenderer.sprite = backgrounds[index];
+        FitSpriteToScreenPreservingAspect(backgroundRenderer, Camera.main);
+    }
+
+    void FitSpriteToScreenPreservingAspect(SpriteRenderer sr, Camera cam)
+    {
+        if (sr.sprite == null || cam == null) return;
+
+        float screenHeight = 2f * cam.orthographicSize;
+        float screenWidth = screenHeight * cam.aspect;
+
+        Vector2 spriteSize = sr.sprite.bounds.size;
+
+        float scaleFactor = Mathf.Max(screenWidth / spriteSize.x, screenHeight / spriteSize.y);
+
+        sr.transform.localScale = new Vector3(scaleFactor, scaleFactor, 1f);
+        sr.transform.position = cam.transform.position; // centraliza o fundo
+    }
+
+    // Exemplo: trocar fundo com tecla
     void Update()
     {
-        gameTime += Time.deltaTime;
-        timer += Time.deltaTime;
-
-        AdjustDifficulty();
-
-        if (timer >= spawnInterval)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            SpawnTarget();
-            timer = 0;
+            currentIndex = (currentIndex + 1) % backgrounds.Length;
+            ChangeBackground(currentIndex);
         }
-    }
-
-    void AdjustDifficulty()
-    {
-        if (gameTime > 40) spawnInterval = 0.3f;
-        else if (gameTime > 20) spawnInterval = 0.6f;
-        else spawnInterval = 1f;
-    }
-
-    void SpawnTarget()
-    {
-        Vector2 position = new Vector2(Random.Range(-5f, 5f), Random.Range(-4f, 4f));
-        GameObject prefab = ShouldSpawnFake() ? fakeTargetPrefab : targetPrefab;
-        Instantiate(prefab, position, Quaternion.identity);
-    }
-
-    bool ShouldSpawnFake()
-    {
-        if (gameTime < 20) return false;
-        float chance = gameTime > 40 ? 0.3f : 0.1f;
-        return Random.value < chance;
     }
 }
