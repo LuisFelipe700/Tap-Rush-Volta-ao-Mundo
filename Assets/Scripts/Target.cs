@@ -13,6 +13,10 @@ public class Target : MonoBehaviour
         StartCoroutine(ScaleUp());
         StartCoroutine(DestroyAfterTime());
     }
+    void Update()
+    {
+        transform.Translate(Vector3.down * Time.deltaTime * 2f); // velocidade de queda
+    }
 
     IEnumerator ScaleUp()
     {
