@@ -2,6 +2,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine;
 using System.Collections;
 using TMPro;
+using UnityEditor;
 
 public class GameManager : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class GameManager : MonoBehaviour
     private float timeLeft;
     private int comboCount = 0;
     private bool comboActive = false;
+    public Sprite[] fundos; // Adiciona isso junto com os outros public
+
 
     void Awake() => Instance = this;
 
@@ -21,6 +24,8 @@ public class GameManager : MonoBehaviour
     {
         timeLeft = gameDuration;
         record = PlayerPrefs.GetInt("Record", 0);
+        CriarFundo(); // Isso vai criar o fundo quando o jogo começar
+
     }
 
     void Update()
@@ -73,4 +78,25 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("Result");
     }
+    void CriarFundo()
+    {
+        if (fundos.Length == 0) return;
+
+        Sprite escolhido = fundos[Random.Range(0, fundos.Length)];
+        GameObject fundoObj = new GameObject("Fundo");
+        SpriteRenderer sr = fundoObj.AddComponent<SpriteRenderer>();
+        sr.sprite = escolhido;
+        sr.sortingOrder = -100;
+
+        Camera cam = Camera.main;
+        fundoObj.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 0f);
+
+        float alturaTela = 2f * cam.orthographicSize;
+        float larguraTela = alturaTela * cam.aspect;
+        Vector2 tamanhoSprite = escolhido.bounds.size;
+        float escala = Mathf.Max(larguraTela / tamanhoSprite.x, alturaTela / tamanhoSprite.y);
+
+        fundoObj.transform.localScale = Vector3.one * escala;
+    }
+
 }
