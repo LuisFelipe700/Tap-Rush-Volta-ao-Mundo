@@ -4,13 +4,16 @@ using UnityEngine.SceneManagement;
 public class MenuManager : MonoBehaviour
 {
     
-    public void Menu()
+    public void Jogo()
     {
        
         SceneManager.LoadScene("Game");
     }
-
-
+    public void cr()
+    {
+        SceneManager.LoadScene("Creditos");
+    }
+    
 
 
 
