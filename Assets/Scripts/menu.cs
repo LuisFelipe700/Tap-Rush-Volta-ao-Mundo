@@ -13,7 +13,11 @@ public class MenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("Creditos");
     }
-    
+    public void Pause()
+    {
+        SceneManager.LoadScene("Pause");
+    }
+
 
 
 

@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Target : MonoBehaviour
 {
-    public float lifetime = 0.7f;
+    public float lifetime = 5f;
     public ParticleSystem hitEffect;
     public AudioClip hitSound;
 
@@ -16,11 +16,12 @@ public class Target : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.down * Time.deltaTime * 2f); // velocidade de queda
+
     }
 
     IEnumerator ScaleUp()
     {
-        float duration = 0.2f;
+        float duration = 0.7f;
         float time = 0f;
         Vector3 startScale = Vector3.zero;
         Vector3 endScale = Vector3.one;
@@ -38,7 +39,7 @@ public class Target : MonoBehaviour
     IEnumerator DestroyAfterTime()
     {
         yield return new WaitForSeconds(lifetime);
-        Destroy(gameObject);
+        //Destroy(gameObject);
     }
 
     [System.Obsolete]

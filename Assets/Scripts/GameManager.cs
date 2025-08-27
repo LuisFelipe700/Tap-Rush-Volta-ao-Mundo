@@ -12,13 +12,27 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText;
     public TextMeshProUGUI timerText;
     public float gameDuration = 60f;
-    private float timeLeft;
+    public float timeLeft;
     private int comboCount = 0;
     private bool comboActive = false;
     public Sprite[] fundos; // Adiciona isso junto com os outros public
 
 
-    void Awake() => Instance = this;
+
+    //void Awake() => Instance = this;
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            Destroy(gameObject); // Evita duplicatas se já houver um GameManager
+        }
+    }
+
 
     void Start()
     {
@@ -30,14 +44,17 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
-        timeLeft -= Time.deltaTime;
-        timerText.text = Mathf.Ceil(timeLeft).ToString();
-
-        if (timeLeft <= 0)
+        if (timeLeft > 0)
+        {
+            timeLeft -= Time.deltaTime;
+            timerText.text = Mathf.Ceil(timeLeft).ToString();
+        }
+        else
         {
             EndGame();
         }
     }
+
 
     public void AddScore(float reactionTime = 0.5f)
     {
