@@ -15,11 +15,8 @@ public class GameManager : MonoBehaviour
     public float timeLeft;
     private int comboCount = 0;
     private bool comboActive = false;
-    public Sprite[] fundos; // Adiciona isso junto com os outros public
+    public Sprite[] fundos;
 
-
-
-    //void Awake() => Instance = this;
     void Awake()
     {
         if (Instance == null)
@@ -29,17 +26,16 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            Destroy(gameObject); // Evita duplicatas se já houver um GameManager
+            Destroy(gameObject);
         }
     }
 
-
     void Start()
     {
+        Time.timeScale = 1f; // Garantir que o tempo do jogo esteja rodando
         timeLeft = gameDuration;
         record = PlayerPrefs.GetInt("Record", 0);
-        CriarFundo(); // Isso vai criar o fundo quando o jogo começar
-
+        CriarFundo();
     }
 
     void Update()
@@ -54,7 +50,6 @@ public class GameManager : MonoBehaviour
             EndGame();
         }
     }
-
 
     public void AddScore(float reactionTime = 0.5f)
     {
@@ -95,25 +90,21 @@ public class GameManager : MonoBehaviour
     {
         SceneManager.LoadScene("Result");
     }
+
     void CriarFundo()
     {
         if (fundos.Length == 0) return;
-
         Sprite escolhido = fundos[Random.Range(0, fundos.Length)];
         GameObject fundoObj = new GameObject("Fundo");
         SpriteRenderer sr = fundoObj.AddComponent<SpriteRenderer>();
         sr.sprite = escolhido;
         sr.sortingOrder = -100;
-
         Camera cam = Camera.main;
         fundoObj.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 0f);
-
         float alturaTela = 2f * cam.orthographicSize;
         float larguraTela = alturaTela * cam.aspect;
         Vector2 tamanhoSprite = escolhido.bounds.size;
         float escala = Mathf.Max(larguraTela / tamanhoSprite.x, alturaTela / tamanhoSprite.y);
-
         fundoObj.transform.localScale = Vector3.one * escala;
     }
-
 }

@@ -17,7 +17,10 @@ public class MenuManager : MonoBehaviour
     {
         SceneManager.LoadScene("Pause");
     }
-
+    public void menu()
+    {
+        SceneManager.LoadScene("MenuPrincipal");
+    }
 
 
 
