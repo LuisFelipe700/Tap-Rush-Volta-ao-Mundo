@@ -3,43 +3,46 @@ using UnityEngine.SceneManagement;
 
 public class PauseMenu : MonoBehaviour
 {
-    public static bool GameIsPaused = false;
-    public GameObject pauseMenuUI; // Arraste aqui o seu painel de menu de pausa
+    public static bool isPaused = false;
+    public GameObject pauseMenuUI;
 
-    void Update()
+    // Removemos o método 'Update()' que verificava a tecla "Escape".
+    // Agora, o controle será feito apenas pelos botões da UI.
+
+    public void TogglePause()
     {
-        // Se a tecla Escape for pressionada
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (isPaused)
         {
-            if (GameIsPaused)
-            {
-                Resume();
-            }
-            else
-            {
-                Pause();
-            }
+            Resume();
+        }
+        else
+        {
+            Pause();
         }
     }
 
     public void Resume()
     {
-        pauseMenuUI.SetActive(false); // Esconde o painel
-        Time.timeScale = 1f; // Retoma o tempo
-        GameIsPaused = false;
+        pauseMenuUI.SetActive(false);
+        Time.timeScale = 1f; // Volta o tempo ao normal
+        isPaused = false;
     }
 
-    public void Pause()
+    void Pause()
     {
-        pauseMenuUI.SetActive(true); // Mostra o painel
-        Time.timeScale = 0f; // Para o tempo
-        GameIsPaused = true;
+        pauseMenuUI.SetActive(true);
+        Time.timeScale = 0f; // Pausa o tempo do jogo
+        isPaused = true;
     }
 
-    // Este método é útil para o botão de "Voltar ao Menu Principal"
     public void LoadMenu()
     {
-        Time.timeScale = 1f; // Garantir que o tempo volte ao normal
-        SceneManager.LoadScene("MenuPrincipal");
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu"); // Mude para o nome da sua cena de menu
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

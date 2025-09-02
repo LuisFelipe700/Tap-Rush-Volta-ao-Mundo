@@ -3,10 +3,10 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    
+
     public void Jogo()
     {
-       
+
         SceneManager.LoadScene("Game");
     }
     public void cr()
@@ -20,12 +20,7 @@ public class MenuManager : MonoBehaviour
     public void menu()
     {
         SceneManager.LoadScene("MenuPrincipal");
-    }
-
-
-
-
-
+    } 
 
 
 
