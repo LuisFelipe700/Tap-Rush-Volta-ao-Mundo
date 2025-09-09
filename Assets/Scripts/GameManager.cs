@@ -1,12 +1,15 @@
-using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
-using UnityEditor;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    // Singleton
     public static GameManager Instance;
+
+    // Variáveis de Jogo
     public int score = 0;
     public int record = 0;
     public TextMeshProUGUI scoreText;
@@ -15,37 +18,73 @@ public class GameManager : MonoBehaviour
     public float timeLeft;
     private int comboCount = 0;
     private bool comboActive = false;
-    public Sprite[] fundos;
+    public Sprite[] fasesDeFundo;
+    private SpriteRenderer fundoSpriteRenderer;
+    private int dificuldadeAtual = 0;
+
+    // Variáveis de Pausa
+    public static bool isPaused = false;
+    public GameObject pauseMenuUI;
+    public GameObject gameplayUI;
+    public TextMeshProUGUI pauseButtonText;
 
     void Awake()
     {
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(this.gameObject);
-        }
-        else
+        if (Instance != null)
         {
             Destroy(gameObject);
+            return;
         }
+        Instance = this;
+        DontDestroyOnLoad(this.gameObject);
     }
 
     void Start()
     {
-        Time.timeScale = 1f; // Garantir que o tempo do jogo esteja rodando
-        timeLeft = gameDuration;
-        record = PlayerPrefs.GetInt("Record", 0);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        ResetGameState();
         CriarFundo();
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Game") // Nome da sua cena de jogo
+        {
+            scoreText = GameObject.Find("ScoreText").GetComponent<TextMeshProUGUI>();
+            timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();
+
+            pauseMenuUI = GameObject.Find("PauseMenuUI");
+            gameplayUI = GameObject.Find("GameplayUI");
+            pauseButtonText = GameObject.Find("PauseButtonText").GetComponent<TextMeshProUGUI>();
+
+            ResetGameState();
+            CriarFundo();
+        }
+    }
+
+    void ResetGameState()
+    {
+        score = 0;
+        timeLeft = gameDuration;
+        comboCount = 0;
+        comboActive = false;
+        dificuldadeAtual = 0;
+
+        Time.timeScale = 1f;
+        isPaused = false;
     }
 
     void Update()
     {
-        if (timeLeft > 0)
+        if (timeLeft > 0 && !isPaused)
         {
             timeLeft -= Time.deltaTime;
-            timerText.text = Mathf.Ceil(timeLeft).ToString();
+            if (timerText != null)
+            {
+                timerText.text = Mathf.Ceil(timeLeft).ToString();
+            }
         }
-        else
+        else if (timeLeft <= 0 && !isPaused)
         {
             EndGame();
         }
@@ -55,7 +94,10 @@ public class GameManager : MonoBehaviour
     {
         int points = reactionTime < 0.3f ? 2 : 1;
         score += comboActive ? points * 2 : points;
-        scoreText.text = score.ToString();
+        if (scoreText != null)
+        {
+            scoreText.text = score.ToString();
+        }
 
         if (reactionTime < 0.3f)
         {
@@ -88,23 +130,91 @@ public class GameManager : MonoBehaviour
 
     public void TriggerGameOver()
     {
-        SceneManager.LoadScene("Result");
+        SceneManager.LoadScene("GameOver");
     }
 
     void CriarFundo()
     {
-        if (fundos.Length == 0) return;
-        Sprite escolhido = fundos[Random.Range(0, fundos.Length)];
-        GameObject fundoObj = new GameObject("Fundo");
-        SpriteRenderer sr = fundoObj.AddComponent<SpriteRenderer>();
-        sr.sprite = escolhido;
-        sr.sortingOrder = -100;
-        Camera cam = Camera.main;
-        fundoObj.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 0f);
-        float alturaTela = 2f * cam.orthographicSize;
-        float larguraTela = alturaTela * cam.aspect;
-        Vector2 tamanhoSprite = escolhido.bounds.size;
-        float escala = Mathf.Max(larguraTela / tamanhoSprite.x, alturaTela / tamanhoSprite.y);
-        fundoObj.transform.localScale = Vector3.one * escala;
+        // NOVIDADE: Verifica se o fundo já existe e o torna persistente
+        GameObject fundoObj = GameObject.Find("Fundo");
+        if (fundoObj == null)
+        {
+            fundoObj = new GameObject("Fundo");
+            fundoSpriteRenderer = fundoObj.AddComponent<SpriteRenderer>();
+            DontDestroyOnLoad(fundoObj);
+        }
+        else
+        {
+            fundoSpriteRenderer = fundoObj.GetComponent<SpriteRenderer>();
+        }
+
+        fundoObj.transform.position = new Vector3(0, 0, 10);
+        fundoSpriteRenderer.sortingOrder = -100;
+
+        if (fasesDeFundo.Length > 0)
+        {
+            // NOVIDADE: Escolhe um sprite aleatório da lista
+            Sprite escolhido = fasesDeFundo[Random.Range(0, fasesDeFundo.Length)];
+            fundoSpriteRenderer.sprite = escolhido;
+
+            // Ajusta a escala para preencher a tela
+            Camera cam = Camera.main;
+            float alturaTela = 2f * cam.orthographicSize;
+            float larguraTela = alturaTela * cam.aspect;
+            Vector2 tamanhoSprite = fundoSpriteRenderer.sprite.bounds.size;
+            float escala = Mathf.Max(larguraTela / tamanhoSprite.x, alturaTela / tamanhoSprite.y);
+            fundoObj.transform.localScale = Vector3.one * escala;
+        }
+    }
+
+    // A função VerificarDificuldade foi removida
+
+    public void TogglePause()
+    {
+        if (isPaused)
+        {
+            Resume();
+        }
+        else
+        {
+            Pause();
+        }
+    }
+
+    public void Resume()
+    {
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+        if (gameplayUI != null) gameplayUI.SetActive(true);
+        Time.timeScale = 1f;
+        isPaused = false;
+
+        if (pauseButtonText != null)
+        {
+            pauseButtonText.text = "PAUSE";
+        }
+    }
+
+    void Pause()
+    {
+        if (pauseMenuUI != null) pauseMenuUI.SetActive(true);
+        if (gameplayUI != null) gameplayUI.SetActive(false);
+        Time.timeScale = 0f;
+        isPaused = true;
+
+        if (pauseButtonText != null)
+        {
+            pauseButtonText.text = "CONTINUAR";
+        }
+    }
+
+    public void LoadMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }
