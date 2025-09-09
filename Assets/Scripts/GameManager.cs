@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    // Singleton
+  
     public static GameManager Instance;
 
-    // Variáveis de Jogo
+    
     public int score = 0;
     public int record = 0;
     public TextMeshProUGUI scoreText;
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     private SpriteRenderer fundoSpriteRenderer;
     private int dificuldadeAtual = 0;
 
-    // Variáveis de Pausa
+    
     public static bool isPaused = false;
     public GameObject pauseMenuUI;
     public GameObject gameplayUI;
@@ -48,7 +48,7 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Game") // Nome da sua cena de jogo
+        if (scene.name == "Game") 
         {
             scoreText = GameObject.Find("ScoreText").GetComponent<TextMeshProUGUI>();
             timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();
@@ -135,7 +135,7 @@ public class GameManager : MonoBehaviour
 
     void CriarFundo()
     {
-        // NOVIDADE: Verifica se o fundo já existe e o torna persistente
+        
         GameObject fundoObj = GameObject.Find("Fundo");
         if (fundoObj == null)
         {
@@ -153,11 +153,11 @@ public class GameManager : MonoBehaviour
 
         if (fasesDeFundo.Length > 0)
         {
-            // NOVIDADE: Escolhe um sprite aleatório da lista
+            
             Sprite escolhido = fasesDeFundo[Random.Range(0, fasesDeFundo.Length)];
             fundoSpriteRenderer.sprite = escolhido;
 
-            // Ajusta a escala para preencher a tela
+           
             Camera cam = Camera.main;
             float alturaTela = 2f * cam.orthographicSize;
             float larguraTela = alturaTela * cam.aspect;
@@ -167,7 +167,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // A função VerificarDificuldade foi removida
+    /// <summary>
+    /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    /// </summary>
 
     public void TogglePause()
     {
