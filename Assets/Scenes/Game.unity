@@ -353,7 +353,7 @@ MonoBehaviour:
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 10
 --- !u!222 &260656390
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1307,10 +1307,10 @@ RectTransform:
   - {fileID: 290696209}
   m_Father: {fileID: 260656391}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.74019426, y: 0.10319584}
-  m_AnchorMax: {x: 0.89366704, y: 0.18729377}
-  m_AnchoredPosition: {x: 2, y: 2.5}
-  m_SizeDelta: {x: -138, y: -36.520996}
+  m_AnchorMin: {x: 0.7245139, y: 0.105391674}
+  m_AnchorMax: {x: 0.88000005, y: 0.185}
+  m_AnchoredPosition: {x: 1.5, y: 0}
+  m_SizeDelta: {x: -141, y: -32.520996}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &767018244
 MonoBehaviour:
@@ -1357,8 +1357,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 767018247}
-        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
-        m_MethodName: menu
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
+        m_MethodName: LoadMenu
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1415,9 +1415,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 767018242}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d0694fb8e9ec3524486be510427d2339, type: 3}
+  m_Script: {fileID: 11500000, guid: 8cefc049786c1c34cbbe49b6e3a58fe8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  score: 0
+  record: 0
+  scoreText: {fileID: 1374332527}
+  timerText: {fileID: 719042924}
+  gameDuration: 60
+  timeLeft: 0
+  fasesDeFundo: []
+  pauseMenuUI: {fileID: 260656388}
+  gameplayUI: {fileID: 0}
+  pauseButtonText: {fileID: 0}
 --- !u!1 &779236664
 GameObject:
   m_ObjectHideFlags: 0
@@ -1928,7 +1938,7 @@ Transform:
   m_GameObject: {fileID: 1523470888}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1341, y: 642, z: 5.5726385}
+  m_LocalPosition: {x: 1341, y: 642.00006, z: 5.57264}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

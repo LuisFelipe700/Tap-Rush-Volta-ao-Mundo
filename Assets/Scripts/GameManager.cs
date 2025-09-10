@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-  
+    // Singleton
     public static GameManager Instance;
 
-    
+    // Variáveis de Jogo
     public int score = 0;
     public int record = 0;
     public TextMeshProUGUI scoreText;
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     private SpriteRenderer fundoSpriteRenderer;
     private int dificuldadeAtual = 0;
 
-    
+    // Variáveis de Pausa
     public static bool isPaused = false;
     public GameObject pauseMenuUI;
     public GameObject gameplayUI;
@@ -48,14 +48,18 @@ public class GameManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Game") 
+        if (scene.name == "Game") // Nome da sua cena de jogo
         {
-            scoreText = GameObject.Find("ScoreText").GetComponent<TextMeshProUGUI>();
-            timerText = GameObject.Find("TimerText").GetComponent<TextMeshProUGUI>();
+            // Busca e reconecta as referências da UI na nova cena
+            scoreText = GameObject.Find("ScoreText")?.GetComponent<TextMeshProUGUI>();
+            timerText = GameObject.Find("TimerText")?.GetComponent<TextMeshProUGUI>();
 
             pauseMenuUI = GameObject.Find("PauseMenuUI");
             gameplayUI = GameObject.Find("GameplayUI");
-            pauseButtonText = GameObject.Find("PauseButtonText").GetComponent<TextMeshProUGUI>();
+            pauseButtonText = GameObject.Find("PauseButtonText")?.GetComponent<TextMeshProUGUI>();
+
+            if (pauseMenuUI != null) pauseMenuUI.SetActive(false);
+            if (gameplayUI != null) gameplayUI.SetActive(true);
 
             ResetGameState();
             CriarFundo();
@@ -135,7 +139,6 @@ public class GameManager : MonoBehaviour
 
     void CriarFundo()
     {
-        
         GameObject fundoObj = GameObject.Find("Fundo");
         if (fundoObj == null)
         {
@@ -153,11 +156,9 @@ public class GameManager : MonoBehaviour
 
         if (fasesDeFundo.Length > 0)
         {
-            
             Sprite escolhido = fasesDeFundo[Random.Range(0, fasesDeFundo.Length)];
             fundoSpriteRenderer.sprite = escolhido;
 
-           
             Camera cam = Camera.main;
             float alturaTela = 2f * cam.orthographicSize;
             float larguraTela = alturaTela * cam.aspect;
@@ -166,10 +167,6 @@ public class GameManager : MonoBehaviour
             fundoObj.transform.localScale = Vector3.one * escala;
         }
     }
-
-    /// <summary>
-    /// ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// </summary>
 
     public void TogglePause()
     {
