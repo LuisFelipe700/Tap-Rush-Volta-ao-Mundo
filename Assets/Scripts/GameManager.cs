@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     private bool comboActive = false;
     public Sprite[] fasesDeFundo;
     private SpriteRenderer fundoSpriteRenderer;
-    private int dificuldadeAtual = 0;
 
     // Variáveis de Pausa
     public static bool isPaused = false;
@@ -37,20 +36,20 @@ public class GameManager : MonoBehaviour
         }
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
+
+        CriarFundo();
     }
 
     void Start()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
-        ResetGameState();
-        CriarFundo();
+        MudarFundoAleatorio();
     }
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Game") // Nome da sua cena de jogo
+        if (scene.name == "Game")
         {
-            // Busca e reconecta as referências da UI na nova cena
             scoreText = GameObject.Find("ScoreText")?.GetComponent<TextMeshProUGUI>();
             timerText = GameObject.Find("TimerText")?.GetComponent<TextMeshProUGUI>();
 
@@ -62,20 +61,21 @@ public class GameManager : MonoBehaviour
             if (gameplayUI != null) gameplayUI.SetActive(true);
 
             ResetGameState();
-            CriarFundo();
+            MudarFundoAleatorio();
         }
     }
 
-    void ResetGameState()
+    public void ResetGameState()
     {
         score = 0;
         timeLeft = gameDuration;
         comboCount = 0;
         comboActive = false;
-        dificuldadeAtual = 0;
 
         Time.timeScale = 1f;
         isPaused = false;
+
+        UpdateScoreText();
     }
 
     void Update()
@@ -90,7 +90,15 @@ public class GameManager : MonoBehaviour
         }
         else if (timeLeft <= 0 && !isPaused)
         {
-            EndGame();
+            TriggerTimedGameOver();
+        }
+    }
+
+    public void UpdateScoreText()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = score.ToString();
         }
     }
 
@@ -98,10 +106,8 @@ public class GameManager : MonoBehaviour
     {
         int points = reactionTime < 0.3f ? 2 : 1;
         score += comboActive ? points * 2 : points;
-        if (scoreText != null)
-        {
-            scoreText.text = score.ToString();
-        }
+
+        UpdateScoreText();
 
         if (reactionTime < 0.3f)
         {
@@ -123,17 +129,29 @@ public class GameManager : MonoBehaviour
         comboCount = 0;
     }
 
-    public void EndGame()
+    // Função de Fim de Jogo quando o TEMPO ZERA
+    public void TriggerTimedGameOver()
     {
         if (score > record)
         {
             PlayerPrefs.SetInt("Record", score);
         }
-        SceneManager.LoadScene("Result");
+        PlayerPrefs.SetInt("LastScore", score);
+        isPaused = false;
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("renicia");
     }
 
-    public void TriggerGameOver()
+    // NOVA FUNÇÃO: Fim de Jogo quando a BOMBA é CLICADA
+    public void TriggerBombGameOver()
     {
+        if (score > record)
+        {
+            PlayerPrefs.SetInt("Record", score);
+        }
+        PlayerPrefs.SetInt("LastScore", score);
+        isPaused = false;
+        Time.timeScale = 1f;
         SceneManager.LoadScene("GameOver");
     }
 
@@ -150,21 +168,27 @@ public class GameManager : MonoBehaviour
         {
             fundoSpriteRenderer = fundoObj.GetComponent<SpriteRenderer>();
         }
+    }
 
-        fundoObj.transform.position = new Vector3(0, 0, 10);
-        fundoSpriteRenderer.sortingOrder = -100;
-
-        if (fasesDeFundo.Length > 0)
+    void MudarFundoAleatorio()
+    {
+        if (fasesDeFundo.Length > 0 && fundoSpriteRenderer != null)
         {
             Sprite escolhido = fasesDeFundo[Random.Range(0, fasesDeFundo.Length)];
             fundoSpriteRenderer.sprite = escolhido;
 
             Camera cam = Camera.main;
-            float alturaTela = 2f * cam.orthographicSize;
-            float larguraTela = alturaTela * cam.aspect;
-            Vector2 tamanhoSprite = fundoSpriteRenderer.sprite.bounds.size;
-            float escala = Mathf.Max(larguraTela / tamanhoSprite.x, alturaTela / tamanhoSprite.y);
-            fundoObj.transform.localScale = Vector3.one * escala;
+            fundoSpriteRenderer.transform.position = new Vector3(cam.transform.position.x, cam.transform.position.y, 10);
+            fundoSpriteRenderer.sortingOrder = -100;
+
+            if (fundoSpriteRenderer.sprite != null)
+            {
+                float alturaTela = 2f * cam.orthographicSize;
+                float larguraTela = alturaTela * cam.aspect;
+                Vector2 tamanhoSprite = fundoSpriteRenderer.sprite.bounds.size;
+                float escala = Mathf.Max(larguraTela / tamanhoSprite.x, alturaTela / tamanhoSprite.y);
+                fundoSpriteRenderer.transform.localScale = Vector3.one * escala;
+            }
         }
     }
 
@@ -206,7 +230,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void LoadMenu()
+    public static void LoadMenu()
     {
         Time.timeScale = 1f;
         SceneManager.LoadScene("MainMenu");
@@ -215,5 +239,10 @@ public class GameManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    internal void TriggerGameOver()
+    {
+        throw new System.NotImplementedException();
     }
 }
