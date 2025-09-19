@@ -1,32 +1,33 @@
 ﻿using UnityEngine;
+using System.Collections;
+using TMPro;
 
 public class FakeTarget : MonoBehaviour
 {
-    public AudioClip explosionSound; // ← Aqui você declara a variável
+    private bool podeSerClicado = true;
+    private GameManager gameManager;
 
-    private void Start()
+    void Start()
     {
-        
-    }
-    void Update()
-    {
-        transform.Translate(Vector3.down * Time.deltaTime * 2f); // mesma velocidade de queda
+        // Pega a instância do GameManager
+        gameManager = GameManager.Instance;
     }
 
+    // Chamado quando o mouse clica no objeto
     void OnMouseDown()
-   
     {
-        // Som de explosão
-        if (explosionSound != null)
+        if (podeSerClicado)
         {
-            AudioSource.PlayClipAtPoint(explosionSound, Camera.main.transform.position);
-        }
+            podeSerClicado = false;
 
-        // Finaliza o jogo
-        GameManager gm = FindAnyObjectByType<GameManager>();
-        if (gm != null)
-        {
-            gm.TriggerGameOver();
+            if (gameManager != null)
+            {
+                // Chama a função específica para o fim de jogo da bomba
+                gameManager.TriggerBombGameOver();
+            }
+
+            // Destrói a bomba após ser clicada
+            Destroy(gameObject);
         }
     }
 }

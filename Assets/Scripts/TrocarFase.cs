@@ -3,9 +3,25 @@ using UnityEngine.SceneManagement;
 
 public class TrocarFase : MonoBehaviour
 {
-    // Este método pode ser chamado por qualquer botão
-    public void ChangeToScene(string sceneName)
+    
+    public void ChangeToScene(string game)
     {
-        SceneManager.LoadScene(sceneName);
+        SceneManager.LoadScene("Game");
+ 
+    
     }
+    public void LoadMenu()
+    {
+        Time.timeScale = 1f;
+        SceneManager.LoadScene("MenuPrincipal");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+
+
+
 }
