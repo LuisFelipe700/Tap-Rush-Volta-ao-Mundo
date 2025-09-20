@@ -1,34 +1,36 @@
 using UnityEngine;
+using System.Collections;
+using TMPro;
+using UnityEngine.SceneManagement;
 
-public class Bomb : MonoBehaviour
+public class FakeTarget : MonoBehaviour
 {
-    public float speed = 3.5f;
-    public AudioClip explosionSound;
-    public ParticleSystem explosionEffect;
+    private bool podeSerClicado = true;
+    private GameManager gameManager;
 
-    void OnMouseDown()
+    private void Start()
     {
-
-        if (explosionSound != null)
-        {
-            AudioSource.PlayClipAtPoint(explosionSound, Camera.main.transform.position);
-        }
-
-
-        if (explosionEffect != null)
-        {
-            Instantiate(explosionEffect, transform.position, Quaternion.identity);
-        }
-
-
-        GameManager.Instance.TriggerGameOver();
-
-        Destroy(this);
+        // Pega a instância do GameManager
+        gameManager = GameManager.Instance;
     }
 
-    void Update()
+    // Chamado quando o mouse clica no objeto
+    private void OnMouseDown()
     {
+        if (podeSerClicado)
+        {
+            podeSerClicado = false;
 
-        transform.Translate(Vector3.down * Time.deltaTime * speed);
+            if (gameManager != null)
+            {
+                // Chama a função específica para o fim de jogo da bomba
+                gameManager.TriggerGameOver("GameOver");
+                SceneManager.LoadScene("GameOver");
+                
+            }
+
+            // Destrói a bomba após ser clicada
+            Destroy(gameObject);
+        }
     }
 }

@@ -29,11 +29,13 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        // SE JÁ EXISTE UMA INSTÂNCIA, DESTRUA ESTE OBJETO PARA EVITAR DUPLICATAS.
         if (Instance != null)
         {
             Destroy(gameObject);
             return;
         }
+        // SE NÃO EXISTE, ESTE É A ÚNICA INSTÂNCIA.
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
@@ -90,7 +92,7 @@ public class GameManager : MonoBehaviour
         }
         else if (timeLeft <= 0 && !isPaused)
         {
-            TriggerTimedGameOver();
+            TriggerGameOver("renicia");
         }
     }
 
@@ -129,8 +131,8 @@ public class GameManager : MonoBehaviour
         comboCount = 0;
     }
 
-    // Função de Fim de Jogo quando o TEMPO ZERA
-    public void TriggerTimedGameOver()
+    // Função de Fim de Jogo Unificada
+    public void TriggerGameOver(string renicia)
     {
         if (score > record)
         {
@@ -140,19 +142,6 @@ public class GameManager : MonoBehaviour
         isPaused = false;
         Time.timeScale = 1f;
         SceneManager.LoadScene("renicia");
-    }
-
-    // NOVA FUNÇÃO: Fim de Jogo quando a BOMBA é CLICADA
-    public void TriggerBombGameOver()
-    {
-        if (score > record)
-        {
-            PlayerPrefs.SetInt("Record", score);
-        }
-        PlayerPrefs.SetInt("LastScore", score);
-        isPaused = false;
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("GameOver");
     }
 
     void CriarFundo()
@@ -230,19 +219,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public static void LoadMenu()
-    {
-        Time.timeScale = 1f;
-        SceneManager.LoadScene("MainMenu");
-    }
+   
 
     public void QuitGame()
     {
         Application.Quit();
-    }
-
-    internal void TriggerGameOver()
-    {
-        throw new System.NotImplementedException();
     }
 }
