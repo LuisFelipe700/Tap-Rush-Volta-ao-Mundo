@@ -6,10 +6,8 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    // Singleton
     public static GameManager Instance;
 
-    // Variáveis de Jogo
     public int score = 0;
     public int record = 0;
     public TextMeshProUGUI scoreText;
@@ -21,25 +19,27 @@ public class GameManager : MonoBehaviour
     public Sprite[] fasesDeFundo;
     private SpriteRenderer fundoSpriteRenderer;
 
-    // Variáveis de Pausa
     public static bool isPaused = false;
     public GameObject pauseMenuUI;
     public GameObject gameplayUI;
     public TextMeshProUGUI pauseButtonText;
 
+    // Novo: fundo como objeto persistente
+    private static GameObject fundoObj;
+
     void Awake()
     {
-        // SE JÁ EXISTE UMA INSTÂNCIA, DESTRUA ESTE OBJETO PARA EVITAR DUPLICATAS.
-        if (Instance != null)
+        // Evitar múltiplos GameManagers
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
         }
-        // SE NÃO EXISTE, ESTE É A ÚNICA INSTÂNCIA.
+
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
 
-        CriarFundo();
+        CriarFundo(); // Garante que o fundo seja criado e preservado
     }
 
     void Start()
@@ -92,7 +92,7 @@ public class GameManager : MonoBehaviour
         }
         else if (timeLeft <= 0 && !isPaused)
         {
-            TriggerGameOver("renicia");
+            TriggerGameOver();
         }
     }
 
@@ -131,22 +131,22 @@ public class GameManager : MonoBehaviour
         comboCount = 0;
     }
 
-    // Função de Fim de Jogo Unificada
-    public void TriggerGameOver(string renicia)
+    public void TriggerGameOver()
     {
         if (score > record)
         {
             PlayerPrefs.SetInt("Record", score);
         }
         PlayerPrefs.SetInt("LastScore", score);
+
         isPaused = false;
         Time.timeScale = 1f;
+
         SceneManager.LoadScene("renicia");
     }
 
     void CriarFundo()
     {
-        GameObject fundoObj = GameObject.Find("Fundo");
         if (fundoObj == null)
         {
             fundoObj = new GameObject("Fundo");
@@ -183,14 +183,8 @@ public class GameManager : MonoBehaviour
 
     public void TogglePause()
     {
-        if (isPaused)
-        {
-            Resume();
-        }
-        else
-        {
-            Pause();
-        }
+        if (isPaused) Resume();
+        else Pause();
     }
 
     public void Resume()
@@ -218,8 +212,6 @@ public class GameManager : MonoBehaviour
             pauseButtonText.text = "CONTINUAR";
         }
     }
-
-   
 
     public void QuitGame()
     {

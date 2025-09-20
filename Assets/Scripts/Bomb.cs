@@ -24,7 +24,7 @@ public class FakeTarget : MonoBehaviour
             if (gameManager != null)
             {
                 // Chama a função específica para o fim de jogo da bomba
-                gameManager.TriggerGameOver("GameOver");
+         
                 SceneManager.LoadScene("GameOver");
                 
             }
